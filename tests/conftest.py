@@ -171,7 +171,7 @@ async def users_with_same_role_50_users(db_session):
             "email": fake.email(),
             "hashed_password": fake.password(),
             "role": UserRole.AUTHENTICATED,
-            "email_verified": False,
+            "email_verified": True,
             "is_locked": False,
         }
         user = User(**user_data)
@@ -215,6 +215,7 @@ async def manager_user(db_session: AsyncSession):
 @pytest.fixture
 def user_base_data():
     return {
+        "nickname": "johnny", 
         "username": "john_doe_123",
         "email": "john.doe@example.com",
         "full_name": "John Doe",
@@ -242,6 +243,8 @@ def user_update_data():
     return {
         "email": "john.doe.new@example.com",
         "full_name": "John H. Doe",
+        "first_name": "John",         
+        "last_name": "Doe",
         "bio": "I specialize in backend development with Python and Node.js.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe_updated.jpg"
     }
@@ -249,7 +252,8 @@ def user_update_data():
 @pytest.fixture
 def user_response_data():
     return {
-        "id": "unique-id-string",
+        "id": str(uuid4()),  
+        "nickname": "testuser",
         "username": "testuser",
         "email": "test@example.com",
         "last_login_at": datetime.now(),
@@ -260,4 +264,21 @@ def user_response_data():
 
 @pytest.fixture
 def login_request_data():
-    return {"username": "john_doe_123", "password": "SecurePassword123!"}
+    return {"email": "john.doe@example.com", "password": "SecurePassword123!"}
+
+# Fix all three like this:
+
+@pytest.fixture
+async def user_token(user):
+    token = create_access_token(data={"sub": user.email, "role": user.role.value})
+    return token
+
+@pytest.fixture
+async def admin_token(admin_user):
+    token = create_access_token(data={"sub": admin_user.email, "role": admin_user.role.value})
+    return token
+
+@pytest.fixture
+async def manager_token(manager_user):
+    token = create_access_token(data={"sub": manager_user.email, "role": manager_user.role.value})
+    return token
