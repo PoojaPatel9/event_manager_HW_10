@@ -75,6 +75,9 @@ jobs:
           cache-from: type=registry,ref=poojapatel9/event_manager_HW_10
           cache-to: type=inline,mode=max
           
+      - name: Scan Docker image with Trivy
+        run: trivy image your_image_name || true
+        
       - name: Scan the Docker image
         uses: aquasecurity/trivy-action@master
         with:
