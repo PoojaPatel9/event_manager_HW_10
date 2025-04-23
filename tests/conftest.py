@@ -171,7 +171,7 @@ async def users_with_same_role_50_users(db_session):
             "email": fake.email(),
             "hashed_password": fake.password(),
             "role": UserRole.AUTHENTICATED,
-            "email_verified": True,
+            "email_verified": False,
             "is_locked": False,
         }
         user = User(**user_data)
@@ -282,3 +282,13 @@ async def admin_token(admin_user):
 async def manager_token(manager_user):
     token = create_access_token(data={"sub": manager_user.email, "role": manager_user.role.value})
     return token
+
+import pytest
+
+@pytest.fixture(autouse=True)
+def mock_smtp(monkeypatch):
+    def mock_send_email(*args, **kwargs):
+        print("📧 Mock email sent.")
+        return True
+
+    monkeypatch.setattr("app.utils.smtp_connection.SMTPClient.send_email", mock_send_email)
