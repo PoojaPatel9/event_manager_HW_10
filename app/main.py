@@ -28,4 +28,25 @@ async def exception_handler(request, exc):
 
 app.include_router(user_routes.router)
 
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
 
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+    
+    openapi_schema["components"]["securitySchemes"] = {
+        "HTTPBearer": {
+            "type": "http",
+            "scheme": "bearer"
+        }
+    }
+    openapi_schema["security"] = [{"HTTPBearer": []}]
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi

@@ -67,3 +67,56 @@ def test_user_base_invalid_email(user_base_data_invalid):
     
     assert "value is not a valid email address" in str(exc_info.value)
     assert "john.doe.example.com" in str(exc_info.value)
+
+def test_user_update_valid_single_field():
+    update = UserUpdate(first_name="Jane")
+    assert update.first_name == "Jane"
+
+def test_user_update_valid_multiple_fields():
+    update = UserUpdate(
+        bio="New bio",
+        profile_picture_url="https://example.com/pic.jpg"
+    )
+    assert update.bio == "New bio"
+
+def test_user_update_invalid_empty():
+    with pytest.raises(ValidationError) as exc_info:
+        UserUpdate()
+    assert "At least one field must be provided for update" in str(exc_info.value)
+
+@pytest.mark.parametrize("nickname", [
+    "john_doe",     # valid
+    "user123",      # valid
+    "user-name",    # valid
+])
+def test_nickname_valid(nickname, user_base_data):
+    user_base_data["nickname"] = nickname
+    user = UserBase(**user_base_data)
+    assert user.nickname == nickname
+
+@pytest.mark.parametrize("nickname", [
+    "a",            # too short
+    "thisnicknameiswaytoolongtobevalidbecauseitexceeds30chars",  # too long
+    "invalid*name", # special char not allowed
+    "space name",   # space not allowed
+])
+def test_nickname_invalid(nickname, user_base_data):
+    user_base_data["nickname"] = nickname
+    with pytest.raises(ValidationError):
+        UserBase(**user_base_data)
+
+@pytest.mark.parametrize("password", [
+    "Short1!",       # too short
+    "alllowercase1!",# no uppercase
+    "NoNumber!",     # no number
+    "NoSpecial123",  # no special char
+])
+def test_user_create_invalid_password(password, user_base_data):
+    user_base_data["password"] = password
+    with pytest.raises(ValidationError):
+        UserCreate(**user_base_data)
+
+def test_user_create_valid_password(user_base_data):
+    user_base_data["password"] = "StrongPass1!"
+    user = UserCreate(**user_base_data)
+    assert user.password == "StrongPass1!"
