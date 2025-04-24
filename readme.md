@@ -23,6 +23,7 @@ TypeError: create_access_token() takes 0 positional arguments but 1 was given
 - Missing token input box under `/docs` Swagger UI
 - Swagger showed username/password fields instead of OAuth2 token input
 - Fix: Updated `main.py` and `dependencies.py` to configure OpenAPI security schema properly
+![AFTER SOLUTION](images/TOKENBOX.png)
 
 ---
 ## [#4 403 Forbidden for Admin Access to `/users/{user_id}`](https://github.com/PoojaPatel9/event_manager_HW_10/issues/4)
@@ -42,6 +43,7 @@ current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))
 - Added password validation in `user_schema.py`:
   - Minimum 8 characters
   - At least 1 uppercase, 1 lowercase, 1 digit, and 1 special character
+![PASSWORD VALIDATION ERROR](images/PASSWORD%20VALIDATION.png)
 
 ---
 ## [#6 Username Validation](https://github.com/PoojaPatel9/event_manager_HW_10/issues/6)
@@ -60,6 +62,8 @@ nickname: Optional[str] = Field(
 
 
 # [DockerHub Deployment](https://hub.docker.com/repository/docker/poojapatel9/event_manager_hw_10)
+
+![DOCKERHUB IMAGE](images/DOCKERHUB%20IMAGE.png)
 
 # Reflection on Learning
 
