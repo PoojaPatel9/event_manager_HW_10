@@ -187,7 +187,7 @@ async def admin_user(db_session: AsyncSession):
         email="admin@example.com",
         first_name="John",
         last_name="Doe",
-        hashed_password="securepassword",
+        hashed_password=hash_password("Secure*1234"),
         role=UserRole.ADMIN,
         is_locked=False,
     )
